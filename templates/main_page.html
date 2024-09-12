@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page avec fond d'image</title>
+    <style>
+        body {
+            background-image: url('op_background.jpg'); /* Chemin vers l'image */
+            background-size: cover;     /* Couvre toute la page */
+            background-position: center; /* Centrer l'image */
+            background-repeat: no-repeat; /* Ne pas répéter l'image */
+            height: 100vh;              /* S'assurer que l'image couvre la hauteur de la page */
+            margin: 0;                  /* Retire les marges par défaut */
+        }
+
+        iframe {
+            border-radius: 15px;        /* Coins arrondis */
+            border: 2px solid white;    /* Bordure blanche */
+            background-color: rgba(0, 0, 0, 0.65); /* Fond noir avec transparence */
+            color: white;               /* Texte en blanc */
+            padding: 10px;              /* Ajoute un peu de padding à l'intérieur de l'iframe */
+        }
+    </style>
+</head>
+<body>
+
+    <div style="display: flex; justify-content: center; align-items: center; height: 35vh; padding-top: 20px;">
+        <iframe src="explanation.html" frameborder="0" width="80%" height="120"></iframe>
+    </div>
+
+</body>
+</html>
