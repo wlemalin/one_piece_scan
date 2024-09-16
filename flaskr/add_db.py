@@ -5,6 +5,14 @@ import os
 DATABASE = os.path.join('instance', 'flaskr.sqlite')
 
 def add_entry(date, name, text):
+    """
+    Function to add new entry in database.
+
+    Args: 
+        date: add date with format YYYY-MM-DD
+        name: name of the youtube channel
+        text: generated text
+    """
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     try:

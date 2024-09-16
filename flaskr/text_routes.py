@@ -6,9 +6,9 @@ bp = Blueprint('dynamic_pages', __name__)
 @bp.route('/<date>/<name>')
 def show_page_by_date_and_name(date, name):
     """
-    Affiche une page en fonction de la date et du nom fournis dans l'URL.
+    Show page by date and name.
     
-    Exemple d'URL : /2024-09-16/nom_utilisateur
+    URL example: /2024-09-16/name
     """
     db = get_db()
 
