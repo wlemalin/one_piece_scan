@@ -19,7 +19,6 @@ if REPLICATE_API_TOKEN is None:
 else:
     replicate.api_token = REPLICATE_API_TOKEN
 
-
 def api_request_decorator(objective: str, instructions: str):
     def decorator(func):
         @wraps(func)
