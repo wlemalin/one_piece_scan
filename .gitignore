@@ -1,2 +1,4 @@
 .env
-.txt
+*.txt
+*.sqlite
+!requirements.txt

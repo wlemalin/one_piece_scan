@@ -29,8 +29,6 @@ def get_subtitles(video_id:str, language='fr'):
         return str(e)
 
 
-
-
 # # Example usage
 # youtube_url = "https://www.youtube.com/watch?v=AZJm0uXFavM&ab_channel=MontCorvo"
 # video_id = get_video_id(youtube_url)
