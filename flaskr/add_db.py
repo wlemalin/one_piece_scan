@@ -36,8 +36,14 @@ def add_entry(date, name, text):
     finally:
         conn.close()
 
-def add_summary_subtitles():
-    video_id = get_last_video('UCu2e-o9q5_hZgPHCv8m1Qzg')
+def add_summary_subtitles(channel_id:str):
+    """
+    Function to summarize and add this to the database.
+
+    Args:
+        channel_id: id of a youtube channel.
+    """
+    video_id = get_last_video(channel_id=channel_id)
     text = get_subtitles(video_id)
     text = synthesize_video_with_llm(text)
     add_entry('2024-09-16', 'montcorvo', text)
@@ -77,5 +83,5 @@ if __name__ == '__main__':
     
     # show_page_by_date_and_name('1996-03-09', 'JohnDoe')
 
-    add_summary_subtitles()
+    add_summary_subtitles('UCu2e-o9q5_hZgPHCv8m1Qzg')
 
