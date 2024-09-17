@@ -21,7 +21,7 @@ def get_subtitles(video_id:str, language='fr'):
         language: a correct language (or list of languages).
     """
     try:
-        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=language)
+        transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=[language])
         subtitles = "\n".join([item['text'] for item in transcript])
         return subtitles
     
@@ -29,13 +29,14 @@ def get_subtitles(video_id:str, language='fr'):
         return str(e)
 
 
-# # Example usage
-# youtube_url = "https://www.youtube.com/watch?v=AZJm0uXFavM&ab_channel=MontCorvo"
-# video_id = get_video_id(youtube_url)
-# subtitles = get_subtitles(video_id)
 
-# if subtitles:
-#     print("Subtitles:\n")
-#     print(subtitles)
-# else:
-#     print("Subtitles not available.")
+# Example usage
+youtube_url = "https://www.youtube.com/watch?v=AZJm0uXFavM&ab_channel=MontCorvo"
+video_id = get_video_id(youtube_url)
+subtitles = get_subtitles(video_id)
+
+if subtitles:
+    print("Subtitles:\n")
+    print(subtitles)
+else:
+    print("Subtitles not available.")

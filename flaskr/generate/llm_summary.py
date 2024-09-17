@@ -72,16 +72,22 @@ def synthesize_infos_with_llm(text: str) -> str | None:
     return text  
 
 @api_request_decorator(
-    objective="Synthetise les infos sur la sortie du scan One Piece.",
+    objective="Synthetise l'histoire",
     instructions=(
         '- **Synthesize the informations**'
-        ' Below you will find a one piece text of a video.\n'
-        ' Using theses informations you will write a paragraph to explain the situation to one piece fans.\n'
+        ' Below you will find a text of a video.\n'
+        ' Using theses informations you will write a paragraph to explain the situation.\n'
         ' You wil write a paragraph that clearly summarize the video\n'
         ' Your answers should always contain close to 500 characters.'
     )
 )
 def synthesize_video_with_llm(text: str) -> str | None:
+    """
+    Function to synthesize video by using replicate (llama3).
+
+    Args:
+        text: text to summarize
+    """
     return text  
 
 def replace_body_content(new_content: str, file_path: str = "explanation.html"):

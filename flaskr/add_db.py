@@ -1,6 +1,15 @@
 import sqlite3
 import os
 
+if __name__ == '__main__':
+    import sys
+    script_dir = os.path.join(os.getcwd(), 'flaskr')  # Chemin absolu vers 'flaskr'
+    sys.path.append(script_dir)
+
+from generate.llm_summary import *
+from scraping.yt_subtitles import *
+from scraping.youtube_api.get_link import *
+
 # Configurations
 DATABASE = os.path.join('instance', 'flaskr.sqlite')
 
@@ -27,38 +36,46 @@ def add_entry(date, name, text):
     finally:
         conn.close()
 
+def add_summary_subtitles():
+    video_id = get_last_video('UCu2e-o9q5_hZgPHCv8m1Qzg')
+    text = get_subtitles(video_id)
+    text = synthesize_video_with_llm(text)
+    add_entry('2024-09-16', 'montcorvo', text)
+
 # Example usage
 if __name__ == '__main__':
     # Replace these with actual values
-    add_entry('1996-03-09', 'JohnDoe', 'Un nasique sauvage apparait.')
+    # add_entry('1996-03-09', 'JohnDoe', 'Un nasique sauvage apparait.')
     
-    def get_db_test():
+    # def get_db_test():
            
-        instance_path = os.path.join(os.path.dirname(__name__), 'instance')
-        database_path = os.path.join(instance_path, 'flaskr.sqlite')
+    #     instance_path = os.path.join(os.path.dirname(__name__), 'instance')
+    #     database_path = os.path.join(instance_path, 'flaskr.sqlite')
 
-        db = sqlite3.connect(
-            database_path,
-            detect_types=sqlite3.PARSE_DECLTYPES
-        )
-        db.row_factory = sqlite3.Row
+    #     db = sqlite3.connect(
+    #         database_path,
+    #         detect_types=sqlite3.PARSE_DECLTYPES
+    #     )
+    #     db.row_factory = sqlite3.Row
 
-        return db
+    #     return db
 
     
-    def show_page_by_date_and_name(date, name):
+    # def show_page_by_date_and_name(date, name):
 
-        db = get_db_test()
+    #     db = get_db_test()
 
-        page_data = db.execute(
-            'SELECT text FROM entries WHERE date = ? AND name = ?',
-            (date, name)
-        ).fetchone()
+    #     page_data = db.execute(
+    #         'SELECT text FROM entries WHERE date = ? AND name = ?',
+    #         (date, name)
+    #     ).fetchone()
 
-        if page_data is None:
-            return f"No content available for {name} on {date}", 404
+    #     if page_data is None:
+    #         return f"No content available for {name} on {date}", 404
 
-        return f"Content: {page_data['text']}"
+    #     return f"Content: {page_data['text']}"
     
-    show_page_by_date_and_name('1996-03-09', 'JohnDoe')
+    # show_page_by_date_and_name('1996-03-09', 'JohnDoe')
+
+    add_summary_subtitles()
 
