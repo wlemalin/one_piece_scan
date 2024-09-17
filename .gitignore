@@ -2,4 +2,4 @@
 *.txt
 *.sqlite
 !requirements.txt
-__pycache__
+*__pycache__
