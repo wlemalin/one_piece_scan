@@ -4,7 +4,7 @@ from flaskr.db import get_db
 bp = Blueprint('dynamic_pages', __name__)
 
 @bp.route('/<date>/<name>')
-def show_page_by_date_and_name(date, name):
+def summary_pages(date, name):
     """
     Show page by date and name.
     
