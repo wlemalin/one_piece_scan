@@ -27,6 +27,7 @@ def create_app(test_config=None):
     # Initialize the database
     from . import db
     db.init_app(app)
+    
 
     # Register the blueprint
     from . import text_routes

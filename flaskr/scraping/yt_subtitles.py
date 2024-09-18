@@ -30,13 +30,4 @@ def get_subtitles(video_id:str, language='fr'):
 
 
 
-# Example usage
-youtube_url = "https://www.youtube.com/watch?v=AZJm0uXFavM&ab_channel=MontCorvo"
-video_id = get_video_id(youtube_url)
-subtitles = get_subtitles(video_id)
 
-if subtitles:
-    print("Subtitles:\n")
-    print(subtitles)
-else:
-    print("Subtitles not available.")
