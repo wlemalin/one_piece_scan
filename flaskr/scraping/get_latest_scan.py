@@ -1,69 +1,59 @@
 import os
 import re
-
-import pandas as pd
+from typing import List, Optional, Tuple
 import requests
 from bs4 import BeautifulSoup
 
-# Création d'un DataFrame pour les sites et leurs URL
-sites_data = {'website': ['lelmanga', 'onepiecescan'],
-              'url': ['https://www.lelmanga.com/category/one-piece', 'https://onepiecescan.fr']}
 
-df_sites = pd.DataFrame(sites_data)
-
-# Compteur global pour suivre le nombre d'appels de la fonction get_latest_chapter
-SCRAP_COUNT = 0
-NEW_SCAN = ""
-
-
-def get_latest_chapter(url: str) -> str | None:
+def get_latest_chapter(urls: List[str]) -> Tuple[Optional[str], Optional[str]]:
     """
-    Scrape the latest chapter from the URL corresponding to the global counter.
-
+    Scrape the latest chapter from the given list of URLs.
+    Args:
+        urls (List[str]): List of URLs to scrape.
     Returns:
-        str: The latest chapter found, or None if none found.
+        Tuple[Optional[int], Optional[str]]: The highest chapter number and the website it was found on,
+                                             or (None, None) if no chapters were found.
     """
+    highest_chapter = None
+    highest_chapter_site = None
 
-    global SCRAP_COUNT
+    for url in urls:
+        response = requests.get(url)
 
-    # allows to iterate over websites if needed
-    current_site = df_sites.iloc[SCRAP_COUNT]
-    url = current_site['url']
-    site_name = current_site['website']
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            chapitres = None
 
-    SCRAP_COUNT += 1  # Incrémenter le compteur après chaque appel
+            # Determine the site based on the URL
+            if 'lelmanga.com' in url:
+                chapitres = soup.find_all('div', class_='epxs')
+                site_name = 'lelmanga'
 
+            elif 'onepiecescan' in url:
+                # Utilisation de la div avec l'ID 'All_chapters' pour récupérer les chapitres
+                chapitres_container = soup.find('div', id='All_chapters')
+                if chapitres_container:
+                    chapitres = chapitres_container.find_all('a')
+                else:
+                    chapitres = []
+                site_name = 'onepiecescan'
 
-    response = requests.get(url)
-    
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.content, 'html.parser')
-
-        if site_name == 'lelmanga':
-            chapitres = soup.find_all('div', class_='epxs')
-        elif site_name == 'onepiecescan':
-            # Utilisation de la div avec l'ID 'All_chapters' pour récupérer les chapitres
-            chapitres_container = soup.find('div', id='All_chapters')
-            if chapitres_container:
-                chapitres = chapitres_container.find_all('a')
-            else:
-                chapitres = []
+            if chapitres:  # clean the string, keep the numbers
+                chapter_text = chapitres[0].text.strip()
+                chapter_number = ''.join(re.findall(r'\d+', chapter_text))
+                chapter_number = int(chapter_number)
+                if chapter_number:
+                    if highest_chapter is None or chapter_number > highest_chapter:
+                        highest_chapter = chapter_number
+                        highest_chapter_site = site_name
         else:
-            print(f"Site {site_name} non pris en charge.")
-            return None
+            print(f"Échec de la requête pour {url}: {response.status_code}")
 
-        new_latest = None
-        if chapitres:
-            new_latest = ''.join(re.findall(r'\d+', chapitres[0].text.strip()))
-            return new_latest
-
-    else:
-        print(f"Échec de la requête : {response.status_code}")
-
-    return None
+    highest_chapter = str(highest_chapter)
+    return highest_chapter, highest_chapter_site
 
 
-def is_scan_delayed(new_chap: str | None, file_name: str = "last_scan_available.txt") -> bool:
+def is_scan_delayed(fetched_chap: str | None, file_name: str = "last_scan_available.txt") -> bool:
     """
     Compare le dernier scan récupéré avec le fichier local et met à jour si nécessaire.
 
@@ -74,39 +64,38 @@ def is_scan_delayed(new_chap: str | None, file_name: str = "last_scan_available.
     Returns:
         bool: True si le scan est déjà enregistré, False sinon.
     """
-    global NEW_SCAN
-
-    
-    if new_chap and not os.path.exists(file_name):
-        with open(file_name, 'w') as file:
-            file.write(new_chap)
-            NEW_SCAN = new_chap
-        return True
-    elif new_chap:
+    if fetched_chap:
         with open(file_name, 'r') as file:
             current_latest = file.read().strip()
 
-        if current_latest == new_chap:
-            return False
+        if current_latest == fetched_chap:
+            return True
         else:
             with open(file_name, 'w') as file:
-                file.write(new_chap)
-                NEW_SCAN = new_chap
-            return True
+                file.write(fetched_chap)
+            return False
     else:
         return False
 
 
+def create_last_scan_file(file_name: str = "last_scan_available.txt"):
+    if not os.path.exists(file_name):
+        with open(file_name, 'w'):
+            pass
+
+
+# Example usage
 if __name__ == '__main__':
-    # load_urls()
-    # Boucle pour exécuter plusieurs fois et changer le site à chaque appel
-    for i in df_sites['url']:  # Remplace 5 par le nombre d'appels souhaité
-        scraped_scan = get_latest_chapter(i)
-        is_scan_delayed(scraped_scan)
-        if NEW_SCAN != "" or SCRAP_COUNT == len(df_sites):
-            break
-    if NEW_SCAN != "":
-        print(f"Nouveau chapitre {NEW_SCAN} enregistré.")
+    urls = [
+        'https://www.lelmanga.com/category/one-piece',
+        'https://onepiecescan.fr',
+    ]
+    create_last_scan_file()
+    latest_chapter, source_site = get_latest_chapter(urls)
+    is_delayed = is_scan_delayed(latest_chapter)
+    if is_delayed:
+        print(
+            f"Le chapitre trouvé le plus récent est encore le  n°{latest_chapter}. pourquoi?")
     else:
-        print("No new chapter found.")
-        # TWEETER LOOKUP
+        print(
+            f"Nouveau scan n°{latest_chapter} enregistré depuis {source_site}.")
