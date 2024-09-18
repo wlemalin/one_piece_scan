@@ -67,6 +67,11 @@ Si le nom de la branche n'est pas le même en local que sur GitHub:
 git push origin nom_branche_locale:nom_branche_distante
 ```
 
+On peut également lier les deux branches sans avoir à push:
+```
+git branch --set-upstream-to=origin/NomDeLaBranche
+```
+
 Il est cepandant plus pratique d'utiliser les mêmes noms en local que sur le repo distant. 
 
 Pour avoir la liste des associations entre branches locales et distantes vous pouvez utiliser la commande:
@@ -141,7 +146,7 @@ git push origin nom_branche
 ```
 
 ### Mise à jour d'une branche locale à partir du dépot distant
-
+Ajout test
 
 
 
