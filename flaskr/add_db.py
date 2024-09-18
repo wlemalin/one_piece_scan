@@ -45,7 +45,7 @@ def add_summary_subtitles(channel_id:str):
     """
     video_id = get_last_video(channel_id=channel_id)
     text = get_subtitles(video_id)
-    text = synthesize_video_with_llm(text)
+    text = synthesize_video_with_llm(text[:8000])
     add_entry('2024-09-16', 'montcorvo', text)
 
 # Example usage
