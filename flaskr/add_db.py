@@ -4,7 +4,7 @@ import click
 
 if __name__ == '__main__':
     import sys
-    script_dir = os.path.join(os.getcwd(), 'flaskr')  # Chemin absolu vers 'flaskr'
+    script_dir = os.path.join(os.getcwd(), 'flaskr')  
     sys.path.append(script_dir)
 
 from generate.llm_summary import *
