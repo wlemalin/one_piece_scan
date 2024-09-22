@@ -57,7 +57,10 @@ git push
 
 Lors du premier push, il faut associer la branche sur laquelle on est au dépot d'une branche distante:
 ```
-git push origin nom_branche
+git push --set-upstream origin NomDeLaBranche
+```
+```
+git push -u origin NomDeLaBranche
 ```
 
 Le nom par default de la branche principale est toujours 'main' ou 'master'

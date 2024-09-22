@@ -4,7 +4,7 @@ import click
 
 if __name__ == '__main__':
     import sys
-    script_dir = os.path.join(os.getcwd(), 'flaskr')  # Chemin absolu vers 'flaskr'
+    script_dir = os.path.join(os.getcwd(), 'flaskr')  
     sys.path.append(script_dir)
 
 from generate.llm_summary import *
@@ -14,41 +14,39 @@ from scraping.youtube_api.get_link import *
 # Configurations
 DATABASE = os.path.join('instance', 'flaskr.sqlite')
 
-def entry_exists(date, name):
+def entry_exists(conn, date, name):
     """
     Function to check if an entry with the given date and name already exists in the database.
     
     Args:
-        date (str): Date in format YYYY-MM-DD.
+        conn (sqlite3.Connection): Database connection.
+        date (str): Date in format YYYY-MM-DDTHH:MM:SSZ.
         name (str): Name of the YouTube channel.
         
     Returns:
         bool: True if the entry exists, False otherwise.
     """
-    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     cursor.execute(
         'SELECT 1 FROM entries WHERE date = ? AND name = ?',
         (date, name)
     )
-    exists = cursor.fetchone() is not None
-    conn.close()
-    return exists
+    return cursor.fetchone() is not None
 
-def add_entry(date, name, text):
+def add_entry(conn, date, name, text):
     """
     Function to add a new entry to the database if it doesn't already exist.
     
     Args: 
+        conn (sqlite3.Connection): Database connection.
         date (str): Date in format YYYY-MM-DDTHH:MM:SSZ.
         name (str): Name of the YouTube channel.
         text (str): Generated text.
     """
-    if entry_exists(date, name):
+    if entry_exists(conn, date, name):
         print("An entry with this date and name already exists.")
         return
 
-    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     try:
         cursor.execute(
@@ -59,9 +57,6 @@ def add_entry(date, name, text):
         print(f"Entry added successfully! test local link http://127.0.0.1:5000/{date}/{name}")
     except sqlite3.IntegrityError as e:
         print(f"Failed to add entry: {e}")
-    finally:
-        conn.close()
-
 
 def add_summary_subtitles(channel_id:str, max_results:int = 7):
     """
@@ -70,17 +65,21 @@ def add_summary_subtitles(channel_id:str, max_results:int = 7):
     Args:
         channel_id: id of a youtube channel.
     """
+    conn = sqlite3.connect(DATABASE)
+    
+    try:
+        video_list = get_video(channel_id=channel_id, max_results=max_results)
 
-    video_list = get_video(channel_id=channel_id, max_results=max_results)
-
-    for video in video_list:
-        if entry_exists(video['date'], video['name']):
-            print(f"An entry with {video['date']} date and {video['name']} already exists.\n\n\n")
-            continue
-        
-        text = get_subtitles(video['video_id'])
-        text = synthesize_video_with_llm(text[:8000])
-        add_entry(video['date'], video['name'], text)
+        for video in video_list:
+            if entry_exists(conn, video['date'], video['name']):
+                print(f"An entry with {video['date']} date and {video['name']} already exists.\n\n\n")
+                continue
+            
+            text = get_subtitles(video['video_id'])
+            text = synthesize_video_with_llm(text[:8000])
+            add_entry(conn, video['date'], video['name'], text)
+    finally:
+        conn.close()
 
 @click.command('add_summary_subtitles')
 @click.argument('max_results', type=int)
