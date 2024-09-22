@@ -20,7 +20,7 @@ def entry_exists(conn, date, name):
     
     Args:
         conn (sqlite3.Connection): Database connection.
-        date (str): Date in format YYYY-MM-DD.
+        date (str): Date in format YYYY-MM-DDTHH:MM:SSZ.
         name (str): Name of the YouTube channel.
         
     Returns:
@@ -65,8 +65,6 @@ def add_summary_subtitles(channel_id:str, max_results:int = 7):
     Args:
         channel_id: id of a youtube channel.
     """
-
-    # Ouvre une connexion unique pour toute la fonction
     conn = sqlite3.connect(DATABASE)
     
     try:
@@ -81,7 +79,6 @@ def add_summary_subtitles(channel_id:str, max_results:int = 7):
             text = synthesize_video_with_llm(text[:8000])
             add_entry(conn, video['date'], video['name'], text)
     finally:
-        # Ferme la connexion à la fin
         conn.close()
 
 @click.command('add_summary_subtitles')
