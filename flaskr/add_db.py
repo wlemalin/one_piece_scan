@@ -1,6 +1,5 @@
 import sqlite3
 import os
-import click
 
 if __name__ == '__main__':
     import sys
@@ -28,7 +27,7 @@ def entry_exists(conn, date, name):
     """
     cursor = conn.cursor()
     cursor.execute(
-        'SELECT 1 FROM entries WHERE date = ? AND name = ?',
+        'SELECT 1 FROM yt_summaries WHERE date = ? AND name = ?',
         (date, name)
     )
     return cursor.fetchone() is not None
@@ -44,13 +43,13 @@ def add_entry(conn, date, name, text):
         text (str): Generated text.
     """
     if entry_exists(conn, date, name):
-        print("An entry with this date and name already exists.")
+        print(f"An entry with {date} date and {name} already exists.\n\n\n")
         return
 
     cursor = conn.cursor()
     try:
         cursor.execute(
-            'INSERT INTO entries (date, name, text) VALUES (?, ?, ?)',
+            'INSERT INTO yt_summaries (date, name, text) VALUES (?, ?, ?)',
             (date, name, text)
         )
         conn.commit()
@@ -69,24 +68,13 @@ def add_summary_subtitles(channel_id:str, max_results:int = 7):
     
     try:
         video_list = get_video(channel_id=channel_id, max_results=max_results)
-
-        for video in video_list:
-            if entry_exists(conn, video['date'], video['name']):
-                print(f"An entry with {video['date']} date and {video['name']} already exists.\n\n\n")
-                continue
-            
+        for video in video_list:          
             text = get_subtitles(video['video_id'])
             text = synthesize_video_with_llm(text[:8000])
             add_entry(conn, video['date'], video['name'], text)
     finally:
         conn.close()
 
-@click.command('add_summary_subtitles')
-@click.argument('max_results', type=int)
-def add_to_db():
-    """Add data"""
-    add_summary_subtitles('UCu2e-o9q5_hZgPHCv8m1Qzg', 3)
-    click.echo('added')
 
 # Example usage
 if __name__ == '__main__':
