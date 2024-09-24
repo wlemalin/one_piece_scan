@@ -13,7 +13,7 @@ def summary_pages(date, name):
     db = get_db()
 
     page_data = db.execute(
-        'SELECT text FROM entries WHERE date = ? AND name = ?',
+        'SELECT text FROM yt_summaries WHERE date = ? AND name = ?',
         (date, name)
     ).fetchone()
 
