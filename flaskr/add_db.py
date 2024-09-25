@@ -70,7 +70,7 @@ def add_summary_subtitles(channel_id:str, max_results:int = 7):
         video_list = get_video(channel_id=channel_id, max_results=max_results)
         for video in video_list: 
             if entry_exists(conn, video['date'], video['name']):
-                print(f"An entry with {video['date']} date and {video['name']} already exists.\n\n\n")
+                print(f"An entry with {video['date']} and {video['name']} already exists.\n\n\n")
                 continue         
             text = get_subtitles(video['video_id'])
             text = synthesize_video_with_llm(text[:8000])
