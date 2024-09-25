@@ -9,6 +9,7 @@ if __name__ == '__main__':
 from generate.llm_summary import *
 from scraping.yt_subtitles import *
 from scraping.youtube_api.get_link import *
+from scraping.get_latest_scan import *
 
 # Configurations
 DATABASE = os.path.join('instance', 'flaskr.sqlite')
@@ -78,9 +79,42 @@ def add_summary_subtitles(channel_id:str, max_results:int = 7):
     finally:
         conn.close()
 
+def check_entry_info(conn, scan): 
+    cursor = conn.cursor()
+    cursor.execute(
+        'SELECT 1 FROM scan_info WHERE scan = ?',
+        (scan,)
+    )
+    return cursor.fetchone() is not None
+
+def add_entry_info():
+    conn = sqlite3.connect(DATABASE)
+    article = parse_dexerto_anime()[0]
+
+    if check_entry_info(conn, article['scan']):
+        print('Une information sur la sortie du scan existe déjà')
+        return
+    
+    text = parse_dexerto(article['url'])
+    text = synthesize_infos_with_llm(text)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            'INSERT INTO scan_info (scan, text, title) VALUES (?, ?, ?)',
+            (article['scan'], text, article['title'])
+        )
+        conn.commit()
+        print(f"Entry added successfully!")
+    except sqlite3.IntegrityError as e:
+        print(f"Failed to add entry: {e}")
 
 # Example usage
 if __name__ == '__main__':
-
+    # article = parse_dexerto_anime()[0]
+    # text = parse_dexerto(article['url'])
+    # text = synthesize_infos_with_llm(text)
+    # print(type(text))
+    add_entry_info()
     add_summary_subtitles('UCu2e-o9q5_hZgPHCv8m1Qzg', 3)
 
