@@ -10,10 +10,7 @@ To run the application use
 flask --app flaskr init-db 
 ```
 
-To update database use (not available)
-```
-python add_db.py add_summary_subtitles <number of video>
-```
+To update database execute add_db.py
 
 You can try your own examples in add_db.py, after initializing database.
 html need changes, take inspiration from flask tutorial.

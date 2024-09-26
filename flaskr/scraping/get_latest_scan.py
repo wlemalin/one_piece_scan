@@ -1,101 +1,126 @@
-import os
 import re
-from typing import List, Optional, Tuple
 import requests
 from bs4 import BeautifulSoup
 
-
-def get_latest_chapter(urls: List[str]) -> Tuple[Optional[str], Optional[str]]:
+def fetch_decorator(func):
     """
-    Scrape the latest chapter from the given list of URLs.
-    Args:
-        urls (List[str]): List of URLs to scrape.
-    Returns:
-        Tuple[Optional[int], Optional[str]]: The highest chapter number and the website it was found on,
-                                             or (None, None) if no chapters were found.
+    Decorator function that fetches the content from a URL and 
+    parses it using the provided parsing function.
     """
-    highest_chapter = None
-    highest_chapter_site = None
-
-    for url in urls:
+    def wrapper(url: str):
         response = requests.get(url)
-
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
-            chapitres = None
-
-            # Determine the site based on the URL
-            if 'lelmanga.com' in url:
-                chapitres = soup.find_all('div', class_='epxs')
-                site_name = 'lelmanga'
-
-            elif 'onepiecescan' in url:
-                # Utilisation de la div avec l'ID 'All_chapters' pour récupérer les chapitres
-                chapitres_container = soup.find('div', id='All_chapters')
-                if chapitres_container:
-                    chapitres = chapitres_container.find_all('a')
-                else:
-                    chapitres = []
-                site_name = 'onepiecescan'
-
-            if chapitres:  # clean the string, keep the numbers
-                chapter_text = chapitres[0].text.strip()
-                chapter_number = ''.join(re.findall(r'\d+', chapter_text))
-                chapter_number = int(chapter_number)
-                if chapter_number:
-                    if highest_chapter is None or chapter_number > highest_chapter:
-                        highest_chapter = chapter_number
-                        highest_chapter_site = site_name
+            return func(soup)
         else:
             print(f"Échec de la requête pour {url}: {response.status_code}")
+            return None
+    return wrapper
 
-    highest_chapter = str(highest_chapter)
-    return highest_chapter, highest_chapter_site
-
-
-def is_scan_delayed(fetched_chap: str | None, file_name: str = "last_scan_available.txt") -> bool:
+@fetch_decorator
+def parse_lelmanga(soup: BeautifulSoup):
     """
-    Compare le dernier scan récupéré avec le fichier local et met à jour si nécessaire.
-
+    Function to parse the latest chapter number from the LelManga website.
+    
     Args:
-        new_chap (str | None): Le dernier scan récupéré.
-        file_name (str): Nom du fichier stockant le dernier scan.
+        url (str): The URL of the page from which the content is retrieved.
 
     Returns:
-        bool: True si le scan est déjà enregistré, False sinon.
+        str: The latest chapter number extracted from the HTML content.
     """
-    if fetched_chap:
-        with open(file_name, 'r') as file:
-            current_latest = file.read().strip()
+    last_chapitre = soup.find_all('div', class_='epxs')[0].get_text(strip=True)
+    return re.findall(r'\d+', last_chapitre)[0]
 
-        if current_latest == fetched_chap:
-            return True
-        else:
-            with open(file_name, 'w') as file:
-                file.write(fetched_chap)
-            return False
-    else:
-        return False
+@fetch_decorator
+def parse_onepiecescan(soup: BeautifulSoup):
+    """
+    Function to parse the latest chapter number from the OnePieceScan website.
+    
+    Args:
+        url (str): The URL of the page from which the content is retrieved.
+
+    Returns:
+        str: The latest chapter number extracted from the HTML content.
+    """
+    last_chapitre = soup.find_all('a', href=True, string=re.compile(r'One Piece Scan Chapitre (\d+)'))[0].get_text(strip=True)
+    return re.findall(r'\d+', last_chapitre)[0]
+
+@fetch_decorator
+def parse_lelscans(soup: BeautifulSoup):
+    """
+    Function to parse the latest chapter number from the LelScans website.
+    
+    Args:
+        url (str): The URL of the page from which the content is retrieved.
+
+    Returns:
+        str: The latest chapter number extracted from the HTML content.
+    """
+    last_chapitre = soup.find_all('option', value=True, string=re.compile(r'(\d+)'))[0].get_text()
+    return re.findall(r'\d+', last_chapitre)[0]
+
+@fetch_decorator
+def parse_dexerto(soup: BeautifulSoup):
+    """
+    Function to parse all paragraph texts from the Dexerto website.
+    
+    Args:
+        url (str): The URL of the page from which the content is retrieved.
+
+    Returns:
+        str: A single string concatenating all paragraph texts from the HTML content.
+    """
+    content = [text.get_text() for text in soup.find_all('p')]
+    return ' '.join(content)
+
+@fetch_decorator
+def parse_dexerto_anime_page(soup: BeautifulSoup):
+    """
+    Function to parse articles containing One Piece chapter information 
+    from the Dexerto anime page.
+    
+    Args:
+        url (str): The URL of the page from which the content is retrieved.
+
+    Returns:
+        list: A list of dictionaries, each containing the title, 
+              scan number, and URL of an article.
+    """
+    pattern = r'One\s*Piece\s*Chapitre\s*(\d+)\s*:\s*date\s*de\s*sortie'
+    articles = []
+    for item in soup.find_all('a', href=True, string=re.compile(pattern, re.IGNORECASE)):
+        article = {
+            'title': item.get_text(),
+            'scan': int(re.findall(r'\d+', item.get_text())[0]),
+            'url': item['href']
+        }
+        articles.append(article)
+    return articles
+        
+def parse_dexerto_anime(max_pages: int = 3):
+    """
+    Function to parse articles from multiple pages of the Dexerto anime section.
+    
+    Args:
+        max_pages (int): The maximum number of pages to parse (default is 3).
+
+    Returns:
+        list: A list of all articles parsed from the specified number of pages.
+    """
+    articles = []
+    for page in range(max_pages):
+        articles.extend(parse_dexerto_anime_page(f'https://www.dexerto.fr/anime/page/{page+1}/'))
+    return articles
 
 
-def create_last_scan_file(file_name: str = "last_scan_available.txt"):
-    if not os.path.exists(file_name):
-        with open(file_name, 'w'):
-            pass
 
-
-# Example usage
 if __name__ == '__main__':
-    urls = [
-        'https://www.lelmanga.com/category/one-piece',
-        'https://onepiecescan.fr',
-    ]
-    create_last_scan_file()
-    latest_chapter, source_site = get_latest_chapter(urls)
-    is_delayed = is_scan_delayed(latest_chapter)
-    if is_delayed:
-        print(
-            f"Le chapitre trouvé le plus récent est encore le  n°{latest_chapter}. pourquoi?")
-    else:
-        print(
-            f"Nouveau scan n°{latest_chapter} enregistré depuis {source_site}.")
+    # print(parse_lelmanga('https://www.lelmanga.com/category/one-piece'))
+    # print(parse_onepiecescan('https://onepiecescan.fr'))
+    # print(parse_lelscans('https://lelscans.net/lecture-en-ligne-one-piece'))
+    tester = parse_dexerto_anime()[0]
+    print(type(tester['url']))
+    print(type(tester['title']))
+    print(type(tester['scan']))
+    # print(parse_dexerto('https://www.dexerto.fr/anime/one-piece-chapitre-1128-informations-1588109/'))
+

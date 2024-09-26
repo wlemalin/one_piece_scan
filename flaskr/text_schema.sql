@@ -9,3 +9,12 @@ CREATE TABLE IF NOT EXISTS yt_summaries (
 
 -- add index
 CREATE INDEX IF NOT EXISTS idx_date_name ON yt_summaries(date, name);
+
+-- add table 'scan_info' to stock last info about scan release 
+CREATE TABLE IF NOT EXISTS scan_info (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    scan INTEGER NOT NULL UNIQUE,
+    text TEXT NOT NULL,
+    title TEXT NOT NULL
+);
+
