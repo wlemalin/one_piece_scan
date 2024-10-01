@@ -13,7 +13,7 @@ def summary_pages(date, name):
     db = get_db()
 
     page_data = db.execute(
-        'SELECT text FROM entries WHERE date = ? AND name = ?',
+        'SELECT text FROM yt_summaries WHERE date = ? AND name = ?',
         (date, name)
     ).fetchone()
 
@@ -21,3 +21,17 @@ def summary_pages(date, name):
         return f"No content available for {name} on {date}", 404
 
     return render_template('explanation.html', text=page_data['text'], date=date, name=name)
+
+@bp.route('/<scan>')
+def summary_info(scan):
+    db = get_db()
+
+    page_data = db.execute(
+        'SELECT text FROM scan_info WHERE scan = ?',
+        (scan,)
+    ).fetchone()
+
+    if page_data is None:
+        return f"No content available for {scan}", 404
+
+    return render_template('explanation.html', text=page_data['text'], scan=scan)

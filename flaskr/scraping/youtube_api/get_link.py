@@ -9,16 +9,31 @@ API_KEY = os.getenv('YOUTUBE_API_KEY')
 BASE_URL = 'https://www.googleapis.com/youtube/v3/search'
 
 
-def get_last_video(channel_id: str, max_results: int = 1) -> str:
+def get_video(channel_id: str, max_results: int = 7) -> list:
     """
-    Function to fetch the URL of the latest video from a YouTube channel.
+    Function to fetch multiple lasts videos from a YouTube channel.
     
     Args:
         channel_id (str): The YouTube channel ID.
-        max_results (int): Number of results to fetch (default is 1).
+        max_results (int): Number of results to fetch.
         
     Returns:
-        str: The URL of the latest video or an error message.
+        list: A list of dictionaries where each contains the video ID, 
+            publish date, and channel name.
+
+            Example:
+            [
+                {
+                    "video_id": "000000000",
+                    "date": "2024-09-15T08:00:18Z",
+                    "name": "Channel"
+                },
+                {
+                    "video_id": "000000001",
+                    "date": "2024-09-08T08:00:37Z",
+                    "name": "Cannel"
+                }
+            ]
     """
     if not API_KEY:
         raise ValueError("API key not found. Please set the 'YOUTUBE_API_KEY' environment variable.")
@@ -37,17 +52,24 @@ def get_last_video(channel_id: str, max_results: int = 1) -> str:
         data = response.json()
 
         if 'items' not in data or not data['items']:
-            return "No videos found for this channel."
+            return []
 
-        video_id = data['items'][0]['id']['videoId']
-        return video_id
+        videos_info = []
+        for item in data['items']:
+            video_info = {
+                "video_id": item['id']['videoId'],
+                "date": item['snippet']['publishedAt'],
+                "name": item['snippet']['channelTitle']
+            }
+            videos_info.append(video_info)
+
+        return videos_info
 
     except requests.exceptions.HTTPError as http_err:
-        return f"HTTP error occurred: {http_err}"
+        return [{"error": f"HTTP error occurred: {http_err}"}]
     except Exception as err:
-        return f"An error occurred: {err}"
+        return [{"error": f"An error occurred: {err}"}]
 
 
 if __name__ == '__main__':
     CHANNEL_ID = 'UCu2e-o9q5_hZgPHCv8m1Qzg'
-    print(get_last_video(CHANNEL_ID))

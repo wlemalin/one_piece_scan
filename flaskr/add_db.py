@@ -3,85 +3,118 @@ import os
 
 if __name__ == '__main__':
     import sys
-    script_dir = os.path.join(os.getcwd(), 'flaskr')  # Chemin absolu vers 'flaskr'
+    script_dir = os.path.join(os.getcwd(), 'flaskr')  
     sys.path.append(script_dir)
 
 from generate.llm_summary import *
 from scraping.yt_subtitles import *
 from scraping.youtube_api.get_link import *
+from scraping.get_latest_scan import *
 
 # Configurations
 DATABASE = os.path.join('instance', 'flaskr.sqlite')
 
-def add_entry(date, name, text):
+def entry_exists(conn, date, name):
     """
-    Function to add new entry in database.
+    Function to check if an entry with the given date and name already exists in the database.
+    
+    Args:
+        conn (sqlite3.Connection): Database connection.
+        date (str): Date in format YYYY-MM-DDTHH:MM:SSZ.
+        name (str): Name of the YouTube channel.
+        
+    Returns:
+        bool: True if the entry exists, False otherwise.
+    """
+    cursor = conn.cursor()
+    cursor.execute(
+        'SELECT 1 FROM yt_summaries WHERE date = ? AND name = ?',
+        (date, name)
+    )
+    return cursor.fetchone() is not None
 
-    Args: 
-        date: add date with format YYYY-MM-DD
-        name: name of the youtube channel
-        text: generated text
+def add_entry(conn, date, name, text):
     """
-    conn = sqlite3.connect(DATABASE)
+    Function to add a new entry to the database if it doesn't already exist.
+    
+    Args: 
+        conn (sqlite3.Connection): Database connection.
+        date (str): Date in format YYYY-MM-DDTHH:MM:SSZ.
+        name (str): Name of the YouTube channel.
+        text (str): Generated text.
+    """
+    if entry_exists(conn, date, name):
+        print(f"An entry with {date} date and {name} already exists.\n\n\n")
+        return
+
     cursor = conn.cursor()
     try:
         cursor.execute(
-            'INSERT INTO entries (date, name, text) VALUES (?, ?, ?)',
+            'INSERT INTO yt_summaries (date, name, text) VALUES (?, ?, ?)',
             (date, name, text)
         )
         conn.commit()
-        print("Entry added successfully!")
-    except sqlite3.IntegrityError:
-        print("An entry with this date and name already exists.")
-    finally:
-        conn.close()
+        print(f"Entry added successfully! test local link http://127.0.0.1:5000/{date}/{name}")
+    except sqlite3.IntegrityError as e:
+        print(f"Failed to add entry: {e}")
 
-def add_summary_subtitles(channel_id:str):
+def add_summary_subtitles(channel_id:str, max_results:int = 7):
     """
     Function to summarize and add this to the database.
 
     Args:
         channel_id: id of a youtube channel.
     """
-    video_id = get_last_video(channel_id=channel_id)
-    text = get_subtitles(video_id)
-    text = synthesize_video_with_llm(text[:8000])
-    add_entry('2024-09-16', 'montcorvo', text)
+    conn = sqlite3.connect(DATABASE)
+    
+    try:
+        video_list = get_video(channel_id=channel_id, max_results=max_results)
+        for video in video_list: 
+            if entry_exists(conn, video['date'], video['name']):
+                print(f"An entry with {video['date']} and {video['name']} already exists.\n\n\n")
+                continue         
+            text = get_subtitles(video['video_id'])
+            text = synthesize_video_with_llm(text[:8000])
+            add_entry(conn, video['date'], video['name'], text)
+    finally:
+        conn.close()
+
+def check_entry_info(conn, scan): 
+    cursor = conn.cursor()
+    cursor.execute(
+        'SELECT 1 FROM scan_info WHERE scan = ?',
+        (scan,)
+    )
+    return cursor.fetchone() is not None
+
+def add_entry_info():
+    conn = sqlite3.connect(DATABASE)
+    article = parse_dexerto_anime()[0]
+
+    if check_entry_info(conn, article['scan']):
+        print('Une information sur la sortie du scan existe déjà')
+        return
+    
+    text = parse_dexerto(article['url'])
+    text = synthesize_infos_with_llm(text)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            'INSERT INTO scan_info (scan, text, title) VALUES (?, ?, ?)',
+            (article['scan'], text, article['title'])
+        )
+        conn.commit()
+        print(f"Entry added successfully!")
+    except sqlite3.IntegrityError as e:
+        print(f"Failed to add entry: {e}")
 
 # Example usage
 if __name__ == '__main__':
-    # Replace these with actual values
-    # add_entry('1996-03-09', 'JohnDoe', 'Un nasique sauvage apparait.')
-    
-    # def get_db_test():
-           
-    #     instance_path = os.path.join(os.path.dirname(__name__), 'instance')
-    #     database_path = os.path.join(instance_path, 'flaskr.sqlite')
-
-    #     db = sqlite3.connect(
-    #         database_path,
-    #         detect_types=sqlite3.PARSE_DECLTYPES
-    #     )
-    #     db.row_factory = sqlite3.Row
-
-    #     return db
-
-    
-    # def show_page_by_date_and_name(date, name):
-
-    #     db = get_db_test()
-
-    #     page_data = db.execute(
-    #         'SELECT text FROM entries WHERE date = ? AND name = ?',
-    #         (date, name)
-    #     ).fetchone()
-
-    #     if page_data is None:
-    #         return f"No content available for {name} on {date}", 404
-
-    #     return f"Content: {page_data['text']}"
-    
-    # show_page_by_date_and_name('1996-03-09', 'JohnDoe')
-
-    add_summary_subtitles('UCu2e-o9q5_hZgPHCv8m1Qzg')
+    # article = parse_dexerto_anime()[0]
+    # text = parse_dexerto(article['url'])
+    # text = synthesize_infos_with_llm(text)
+    # print(type(text))
+    add_entry_info()
+    add_summary_subtitles('UCu2e-o9q5_hZgPHCv8m1Qzg', 3)
 
