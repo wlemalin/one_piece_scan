@@ -1,4 +1,4 @@
-# one_piece_scan
+# One_Piece_scan
 
 To initialize database use 
 ```
