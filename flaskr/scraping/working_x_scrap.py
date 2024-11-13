@@ -2,29 +2,36 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-# Initialiser le navigateur
-driver = webdriver.Chrome()
+def init_driver():
+    """Initialise et retourne le navigateur."""
+    return webdriver.Chrome()
 
-# Accéder à la page X (Twitter) d'Elon Musk
-url = 'https://x.com/elonmusk'
-driver.get(url)
+def open_twitter_profile(driver, username):
+    """Accède à la page X (Twitter) du profil spécifié."""
+    url = f'https://x.com/{username}'
+    driver.get(url)
+    time.sleep(4)  # Attendre que la page se charge
 
-# Attendre quelques secondes pour permettre le chargement de la page
-time.sleep(4)
+def fetch_latest_tweets(driver, num_tweets=3):
+    """Récupère et affiche le contenu des derniers tweets."""
+    try:
+        tweets = driver.find_elements(By.XPATH, '//*[@data-testid="tweetText"]')
+        for i in range(min(num_tweets, len(tweets))):
+            print(f"Tweet {i+1} :")
+            print(tweets[i].text)
+            print('-' * 50)
+    except Exception as e:
+        print("Erreur lors de la récupération des tweets:", e)
 
-# Récupérer le contenu du dernier post
-try:
-    # Localiser tous les éléments de tweets contenant le texte par leur attribut data-testid="tweetText"
-    tweets = driver.find_elements(By.XPATH, '//*[@data-testid="tweetText"]')
+def close_driver(driver):
+    """Ferme le navigateur."""
+    driver.quit()
 
-    # Extraire et afficher le contenu des trois premiers tweets
-    for i in range(min(3, len(tweets))):  # Récupérer jusqu'à 3 tweets
-        print(f"Tweet {i+1} :")
-        print(tweets[i].text)
-        print('-' * 50)
+def latest_tweets(username):
+    driver = init_driver()
+    open_twitter_profile(driver, username)
+    fetch_latest_tweets(driver)
+    close_driver(driver)
 
-except Exception as e:
-    print("Erreur lors de la récupération des tweets:", e)
-
-# Fermer le navigateur
-driver.quit()
+# Appel de la fonction principale avec le nom d'utilisateur en argument
+latest_tweets('elonmusk')
