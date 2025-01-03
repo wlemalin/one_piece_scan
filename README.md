@@ -39,7 +39,7 @@ pip install -r requirements.txt
 
 ## Execution of the scripts
 
-To initialize database use 
+To initialize sqlite database use 
 ```
 flask --app flaskr run --debug 
 ```
