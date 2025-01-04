@@ -89,7 +89,7 @@ def check_entry_info(conn, scan):
 
 def add_entry_info():
     conn = sqlite3.connect(DATABASE)
-    article = parse_dexerto_anime()[0]
+    article = parse_dexerto_anime(9)[0]
 
     if check_entry_info(conn, article['scan']):
         print('Une information sur la sortie du scan existe déjà')
@@ -115,6 +115,6 @@ if __name__ == '__main__':
     # text = parse_dexerto(article['url'])
     # text = synthesize_infos_with_llm(text)
     # print(type(text))
-    add_entry_info()
+    # add_entry_info()
     add_summary_subtitles('UCu2e-o9q5_hZgPHCv8m1Qzg', 3)
 
