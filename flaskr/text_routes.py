@@ -35,3 +35,11 @@ def summary_info(scan):
         return f"No content available for {scan}", 404
 
     return render_template('explanation.html', text=page_data['text'], scan=scan)
+
+@bp.route('/theories')
+def index():
+    db = get_db()
+    cur = db.execute('SELECT id, link FROM yt_summaries')
+    entries = cur.fetchall()
+
+    return render_template('theories.html', entries=entries)

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Page personnalisée{% endblock %}
+
+{% block content %}
+    <h1>Liste des Entrées</h1>
+    <ul>
+        {% for entry in entries %}
+            <li><a href="{{ entry[1] }}">{{ entry[0] }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+

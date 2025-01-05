@@ -33,7 +33,7 @@ def entry_exists(conn, date, name):
     )
     return cursor.fetchone() is not None
 
-def add_entry(conn, date, name, text):
+def add_entry(conn, date, name:str, text):
     """
     Function to add a new entry to the database if it doesn't already exist.
     
@@ -48,13 +48,14 @@ def add_entry(conn, date, name, text):
         return
 
     cursor = conn.cursor()
+    link = f"http://127.0.0.1:5000/{date}/{name.replace(" ", "%20")}"
     try:
         cursor.execute(
-            'INSERT INTO yt_summaries (date, name, text) VALUES (?, ?, ?)',
-            (date, name, text)
+            'INSERT INTO yt_summaries (date, name, text, link) VALUES (?, ?, ?, ?)',
+            (date, name, text, link)
         )
         conn.commit()
-        print(f"Entry added successfully! test local link http://127.0.0.1:5000/{date}/{name}")
+        print(f"Entry added successfully! test local link http://127.0.0.1:5000/{date}/{name.replace(" ", "%20")}")
     except sqlite3.IntegrityError as e:
         print(f"Failed to add entry: {e}")
 
