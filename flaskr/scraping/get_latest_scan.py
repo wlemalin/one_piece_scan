@@ -8,12 +8,15 @@ def fetch_decorator(func):
     parses it using the provided parsing function.
     """
     def wrapper(url: str):
-        response = requests.get(url)
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             return func(soup)
         else:
-            print(f"Échec de la requête pour {url}: {response.status_code}")
+            print(f"Request failure for {url}: {response.status_code}")
             return None
     return wrapper
 
@@ -118,7 +121,7 @@ if __name__ == '__main__':
     # print(parse_lelmanga('https://www.lelmanga.com/category/one-piece'))
     # print(parse_onepiecescan('https://onepiecescan.fr'))
     # print(parse_lelscans('https://lelscans.net/lecture-en-ligne-one-piece'))
-    tester = parse_dexerto_anime(9)[0]
+    tester = parse_dexerto_anime(3)[0]
     print(type(tester['url']))
     print(type(tester['title']))
     print(type(tester['scan']))

@@ -55,7 +55,7 @@ def add_entry(conn, date, name:str, text):
             (date, name, text, link)
         )
         conn.commit()
-        print(f"Entry added successfully! test local link http://127.0.0.1:5000/{date}/{name.replace(" ", "%20")}")
+        print(f"Entry added successfully! test local link {link}")
     except sqlite3.IntegrityError as e:
         print(f"Failed to add entry: {e}")
 
@@ -99,11 +99,12 @@ def add_entry_info():
     text = parse_dexerto(article['url'])
     text = synthesize_infos_with_llm(text)
     cursor = conn.cursor()
+    link = f"http://127.0.0.1:5000/{article['scan']}"
 
     try:
         cursor.execute(
-            'INSERT INTO scan_info (scan, text, title) VALUES (?, ?, ?)',
-            (article['scan'], text, article['title'])
+            'INSERT INTO scan_info (scan, text, title, link) VALUES (?, ?, ?, ?)',
+            (article['scan'], text, article['title'], link)
         )
         conn.commit()
         print(f"Entry added successfully!")
@@ -116,6 +117,6 @@ if __name__ == '__main__':
     # text = parse_dexerto(article['url'])
     # text = synthesize_infos_with_llm(text)
     # print(type(text))
-    # add_entry_info()
+    add_entry_info()
     add_summary_subtitles('UCu2e-o9q5_hZgPHCv8m1Qzg', 3)
 

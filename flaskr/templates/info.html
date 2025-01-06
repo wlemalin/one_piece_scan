@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Theories{% endblock %}
+{% block title %}Last scan actu{% endblock %}
 
 {% block content %}
-    <h1>Theories</h1>
+    <h1>Last scan list</h1>
     <ul>
         {% for entry in entries %}
             <li><a href="{{ entry[1] }}">{{ entry[0] }}</a></li>
