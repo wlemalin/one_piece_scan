@@ -75,10 +75,11 @@ def synthesize_infos_with_llm(text: str) -> str | None:
     objective="Synthetise l'histoire",
     instructions=(
         '- **Synthesize the informations**'
-        ' Below you will find a text of a video.\n'
+        ' Below you will find a subtitle from a video.\n'
         ' Using theses informations you will write a paragraph to explain the situation.\n'
-        ' You wil write a paragraph that clearly summarize the video\n'
-        ' Your answers should always contain close to 500 characters.'
+        ' You will write a paragraph that clearly summarize the chapter to the fans with an hype intonation\n'
+        ' Moreover, you will graduate the chapter on 10 in function of the sentiment of speecher in the video\n'
+        ' Your answers should always contain close to 2000 characters.'
     )
 )
 def synthesize_video_with_llm(text: str) -> str | None:
