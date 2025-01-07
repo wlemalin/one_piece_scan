@@ -59,18 +59,24 @@ backgroundImage: "background.jpg" # Remplacez par le chemin de votre image d'arr
 ```
 ---
 # Scraping : Script subtitles vidéo youtube de la chaîne Mont Corvo
-```
-# Script scrap subtitles
-```
+
+[get_latest_scan.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/scraping/get_latest_scan.py)
+
+[yt_subtitles.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/scraping/yt_subtitles.py)
+
 ---
 # Scraping : Script Dextero pour obtenir les prochaines dates de sortie
 ```
 # Script scrap date de sortie
 ```
 # DB : SQLite storage
-```
-# Script architecture DB
-```
+
+[add_db.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/add_db.py)
+
+[db.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/db.py)
+
+[text_schema.sql](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/text_schema.sql)
+
 ---
 # AI : Llama 3.3-70b (Dextero)
 ```
@@ -80,13 +86,6 @@ backgroundImage: "background.jpg" # Remplacez par le chemin de votre image d'arr
 # AI : Llama 3.3-70b (Subtitles)
 ```
 # Script scrap Subtitles passage au LLM
-```
-- > Prompt
-
----
-# AI : Sentiment Analysis (Subtitles)
-```
-# Script Sentiment Analysis
 ```
 - > Prompt
 
