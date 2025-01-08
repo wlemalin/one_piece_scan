@@ -1,15 +1,10 @@
-import re
 import os
+import re
 import time
-import replicate
-from replicate.exceptions import ReplicateError
 from functools import wraps
-response_file = "explanation.txt"
+
 import replicate
 from replicate.exceptions import ReplicateError
-
-# If API-KEY problem, just paste yours below
-# os.environ['REPLICATE_API_TOKEN'] = 'r8_...'
 
 # Assurez-vous que la variable d'environnement est définie
 REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
@@ -18,6 +13,7 @@ if REPLICATE_API_TOKEN is None:
     raise EnvironmentError("REPLICATE_API_TOKEN is not set in the environment")
 else:
     replicate.api_token = REPLICATE_API_TOKEN
+
 
 def api_request_decorator(objective: str, instructions: str):
     def decorator(func):
@@ -55,21 +51,25 @@ def api_request_decorator(objective: str, instructions: str):
         return wrapper
     return decorator
 
+
 @api_request_decorator(
     objective="Synthetise les infos sur la sortie du scan One Piece.",
     instructions=(
         '- **Synthesize the informations**'
-        ' Below you will find the reasons why the last One Piece scan is not available.\n'
+        ' Below you will find tweets that may contain the reasons why the last One Piece scan is not available.\n'
         ' Using theses informations you will write a paragraph to explain the situation to one piece fans.\n'
         ' You wil write a paragraph that clearly explains the reasons that caused the problem\n'
         ' If informations on the new release date is available, you should include it in your explanation.\n'
         ' You will only write the explanations in quote and do not write any introduction phrase before.\n'
-        ' Your answers should always contain close to 500 characters.'
+        ' Your answers should always contain close to 500 characters.\n'
+        'If the scan was released as expected just simply say so.\n'
+        'If the text given to you does not provide an explanation, say that the reason of the delay is unknown.'
     )
 )
 def synthesize_infos_with_llm(text: str) -> str | None:
     """Envoie le texte à Llama3 via l'API Replicate pour synthétiser les infos Twitter."""
-    return text  
+    return text
+
 
 @api_request_decorator(
     objective="Synthetise l'histoire",
@@ -89,31 +89,33 @@ def synthesize_video_with_llm(text: str) -> str | None:
     Args:
         text: text to summarize
     """
-    return text  
+    return text
 
-def replace_body_content(new_content: str, file_path: str = "explanation.html"):
+
+def replace_body_content(new_content: str, file_path: str = "../templates/release_status.html"):
     try:
         # Lire le contenu du fichier HTML
         with open(file_path, 'r', encoding='utf-8') as file:
             html_content = file.read()
 
-        # Utiliser une expression régulière pour remplacer le contenu entre <body> et </body>
-        updated_content = re.sub(r'(<body.*?>)(.*?)(</body>)', r'\1' + new_content + r'\3', html_content, flags=re.DOTALL)
+        # Expression régulière pour remplacer le contenu entre <p> et </p>
+        updated_content = re.sub(
+            r'(<p>)(.*?)(</p>)', rf'\1{new_content}\3', html_content, flags=re.DOTALL)
 
         # Écrire le contenu mis à jour dans le fichier HTML
         with open(file_path, 'w', encoding='utf-8') as file:
             file.write(updated_content)
 
-        print("Contenu du body mis à jour avec succès.")
-    
+        print("Contenu entre <p> et </p> mis à jour avec succès.")
+
     except FileNotFoundError:
         print(f"Le fichier {file_path} n'a pas été trouvé.")
     except Exception as e:
         print(f"Une erreur s'est produite : {e}")
 
 
-def infos_cleanup(input_text = "infos_twitter.txt"):
-    """Synthesize informations and save the response"""
+def infos_cleanup(input_text="infos_twitter.txt"):
+    """Synthesize informations about the delay and save the response"""
     with open(input_text) as infos:
         twitter_infos = infos.read()
 
