@@ -89,12 +89,16 @@ def check_entry_info(conn, scan):
     )
     return cursor.fetchone() is not None
 
-def add_entry_info():
-    conn = sqlite3.connect(DATABASE)
-    article = parse_dexerto_anime(9)[0]
-
+def add_entry_info(conn, article):
+    """
+    Adds entry information to the database if it does not already exist.
+    
+    Args:
+        conn (sqlite3.Connection): The database connection object.
+        article (dict): A dictionary containing article information such as scan, URL, and title.
+    """
     if check_entry_info(conn, article['scan']):
-        print('Une information sur la sortie du scan existe déjà')
+        print('Scan information already exists.')
         return
     
     text = parse_dexerto(article['url'])
@@ -112,12 +116,30 @@ def add_entry_info():
     except sqlite3.IntegrityError as e:
         print(f"Failed to add entry: {e}")
 
+def add_all_info(max_pages=3, max_articles=5):
+    """
+    Parses articles and adds their information to the database.
+    
+    Args:
+        max_pages (int): Maximum number of pages to parse for articles.
+    """
+    articles = parse_dexerto_anime(max_pages)
+    articles = articles[:max_articles] if len(articles) >= max_articles else articles
+    
+    conn = sqlite3.connect(DATABASE)
+    try:
+        for article in articles:
+            add_entry_info(conn, article)
+    finally:
+        conn.close()
+
+
 # Example usage
 if __name__ == '__main__':
     # article = parse_dexerto_anime()[0]
     # text = parse_dexerto(article['url'])
     # text = synthesize_infos_with_llm(text)
     # print(type(text))
-    add_entry_info()
+    add_all_info(9)
     add_summary_subtitles('UCu2e-o9q5_hZgPHCv8m1Qzg', 3)
 

@@ -121,9 +121,7 @@ if __name__ == '__main__':
     # print(parse_lelmanga('https://www.lelmanga.com/category/one-piece'))
     # print(parse_onepiecescan('https://onepiecescan.fr'))
     # print(parse_lelscans('https://lelscans.net/lecture-en-ligne-one-piece'))
-    tester = parse_dexerto_anime(3)[0]
-    print(type(tester['url']))
-    print(type(tester['title']))
-    print(type(tester['scan']))
+    tester = parse_dexerto_anime(3)
+    print(tester)
     # print(parse_dexerto('https://www.dexerto.fr/anime/one-piece-chapitre-1128-informations-1588109/'))
 
