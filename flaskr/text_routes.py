@@ -39,7 +39,7 @@ def summary_info(scan):
 @bp.route('/theories')
 def index_theories():
     db = get_db()
-    cur = db.execute('SELECT name, link FROM yt_summaries')
+    cur = db.execute('SELECT name, link, title FROM yt_summaries')
     entries = cur.fetchall()
 
     return render_template('theories.html', entries=entries)

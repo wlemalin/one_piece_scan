@@ -1,4 +1,5 @@
 import os
+import html
 import requests
 from dotenv import load_dotenv
 
@@ -59,7 +60,8 @@ def get_video(channel_id: str, max_results: int = 7) -> list:
             video_info = {
                 "video_id": item['id']['videoId'],
                 "date": item['snippet']['publishedAt'],
-                "name": item['snippet']['channelTitle']
+                "name": item['snippet']['channelTitle'],
+                "title": html.unescape(item['snippet']['title'])
             }
             videos_info.append(video_info)
 
@@ -73,3 +75,4 @@ def get_video(channel_id: str, max_results: int = 7) -> list:
 
 if __name__ == '__main__':
     CHANNEL_ID = 'UCu2e-o9q5_hZgPHCv8m1Qzg'
+    # get_video(CHANNEL_ID)

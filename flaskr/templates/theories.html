@@ -6,7 +6,7 @@
     <h1>Theories</h1>
     <ul>
         {% for entry in entries %}
-            <li><a href="{{ entry[1] }}">{{ entry[0] }}</a></li>
+            <li><a href="{{ entry[1] }}">{{ entry[0] }}: {{ entry[2] }}</a></li>
         {% endfor %}
     </ul>
 {% endblock %}

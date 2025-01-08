@@ -33,7 +33,7 @@ def entry_exists(conn, date, name):
     )
     return cursor.fetchone() is not None
 
-def add_entry(conn, date, name:str, text):
+def add_entry(conn, date, name:str, text:str, title:str):
     """
     Function to add a new entry to the database if it doesn't already exist.
     
@@ -42,6 +42,7 @@ def add_entry(conn, date, name:str, text):
         date (str): Date in format YYYY-MM-DDTHH:MM:SSZ.
         name (str): Name of the YouTube channel.
         text (str): Generated text.
+        title (str): Title of video.
     """
     if entry_exists(conn, date, name):
         print(f"An entry with {date} date and {name} already exists.\n\n\n")
@@ -51,8 +52,8 @@ def add_entry(conn, date, name:str, text):
     link = f"http://127.0.0.1:5000/{date}/{name.replace(" ", "%20")}"
     try:
         cursor.execute(
-            'INSERT INTO yt_summaries (date, name, text, link) VALUES (?, ?, ?, ?)',
-            (date, name, text, link)
+            'INSERT INTO yt_summaries (date, name, text, link, title) VALUES (?, ?, ?, ?, ?)',
+            (date, name, text, link, title)
         )
         conn.commit()
         print(f"Entry added successfully! test local link {link}")
@@ -76,7 +77,7 @@ def add_summary_subtitles(channel_id:str, max_results:int = 7):
                 continue         
             text = get_subtitles(video['video_id'])
             text = synthesize_video_with_llm(text[:8000])
-            add_entry(conn, video['date'], video['name'], text)
+            add_entry(conn, video['date'], video['name'], text, video['title'])
     finally:
         conn.close()
 

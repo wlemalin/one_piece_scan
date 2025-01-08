@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS yt_summaries (
     name TEXT NOT NULL,
     text TEXT NOT NULL,
     link TEXT NOT NULL,
-    UNIQUE(date, name, text, link)
+    title TEXT NOT NULL,
+    UNIQUE(date, name, text, link, title)
 );
 
 -- add index
