@@ -49,7 +49,7 @@ def add_entry(conn, date, name:str, text:str, title:str):
         return
 
     cursor = conn.cursor()
-    link = f"http://127.0.0.1:5000/{date}/{name.replace(" ", "%20")}"
+    link = f"http://127.0.0.1:5000/{date}/{name.replace(' ', '%20')}"
     try:
         cursor.execute(
             'INSERT INTO yt_summaries (date, name, text, link, title) VALUES (?, ?, ?, ?, ?)',
