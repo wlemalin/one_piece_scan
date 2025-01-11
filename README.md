@@ -16,9 +16,39 @@ The objective of this project is to gather information regarding the release of 
 
 Since One Piece chapters are legally published on Sundays, and analysis videos are released on the same day, we will verify whether a chapter is scheduled for release that week by consulting the CSV file **(4)**. If the CSV indicates a break week, our HTML page will display that it is a break week, along with the next scheduled release date. If a chapter is scheduled for release, we will then verify if the scan has been published that week **(3)**. If so, the YouTube subtitles script will execute (summary-analysis and theory generation) **(1)**. Otherwise, the script will retrieve justification details from Dextero **(2)**.
 
+![width:120px](Présentation/Schema.png)
 
 ## Our tree structure :
 ```
+├── flaskr
+│   ├── add_db.py
+│   ├── db.py
+│   ├── generate
+│   │   └── llm_summary.py
+│   ├── init.py
+│   ├── scraping
+│   │   ├── get_latest_scan.py
+│   │   ├── init.py
+│   │   ├── working_x_scrap.py
+│   │   ├── youtube_api
+│   │   │   ├── _error.py
+│   │   │   ├── get_link.py
+│   │   │   └── init.py
+│   │   └── yt_subtitles.py
+│   ├── static
+│   │   └── op_background.jpg
+│   ├── templates
+│   │   ├── base.html
+│   │   ├── explanation.html
+│   │   ├── info.html
+│   │   └── theories.html
+│   ├── text_routes.py
+│   └── text_schema.sql
+├── git_tuto.md
+├── instance
+│   └── flaskr.sqlite
+├── README.md
+└── requirements.txt
 ```
 
 ## Development Environment:
