@@ -10,6 +10,7 @@ from generate.llm_summary import *
 from scraping.yt_subtitles import *
 from scraping.youtube_api.get_link import *
 from scraping.get_latest_scan import *
+from scraping.actu_x_scraping import fetch_actus_tweets
 
 # Configurations
 DATABASE = os.path.join('instance', 'flaskr.sqlite')
@@ -133,13 +134,27 @@ def add_all_info(max_pages=3, max_articles=5):
     finally:
         conn.close()
 
+def add_weekly_news():
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    news, week = summarize_actus()
+    try:
+        cursor.execute(
+            'INSERT INTO weekly_news (week, news) VALUES (?, ?)',
+            (week, news)
+        )
+        conn.commit()
+        print(f"Entry added successfully!")
+    except sqlite3.IntegrityError as e:
+        print(f"Failed to add entry: {e}")
 
 # Example usage
 if __name__ == '__main__':
+    add_weekly_news()
     # article = parse_dexerto_anime()[0]
     # text = parse_dexerto(article['url'])
     # text = synthesize_infos_with_llm(text)
     # print(type(text))
-    add_all_info(9)
-    add_summary_subtitles('UCu2e-o9q5_hZgPHCv8m1Qzg', 3)
+    # add_all_info(9)
+    # add_summary_subtitles('UCu2e-o9q5_hZgPHCv8m1Qzg', 3)
 

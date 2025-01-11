@@ -20,3 +20,11 @@ CREATE TABLE IF NOT EXISTS scan_info (
     title TEXT NOT NULL,
     link TEXT NOT NULL
 );
+
+
+-- add table 'weekly_news' to stock the latest twitter news 
+CREATE TABLE IF NOT EXISTS weekly_news (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    week INTEGER NOT NULL UNIQUE,
+    news TEXT NOT NULL
+);

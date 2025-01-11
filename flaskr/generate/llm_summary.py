@@ -1,6 +1,7 @@
 import os
 import re
 import time
+import datetime
 from functools import wraps
 
 import replicate
@@ -128,5 +129,34 @@ def infos_cleanup(input_text="infos_twitter.txt"):
         print("Aucune réponse reçue ou erreur lors de la récupération de la réponse.")
 
 
+@api_request_decorator(
+    objective="Synthetise les actus sur l'univers de One Piece.",
+    instructions=(
+        '- **Synthesize the informations**'
+        ' Below you will find tweets that contain News about One Piece.\n'
+        ' Some news might be unintelligible due to the image/video missing.'
+        ' You will write a list of the actus of this week, including:'
+        ' characters birthdays, events, anything that might be important for the fanbase.\n'
+        ' If the context is not sufficient for you to be sure then do not mention the tweet at all\n'
+        ' Your answers should be a list aimed at the fanbase, showing the week\'s news about One Piece .\n'
+        ' You will introduce the list with "Here are this week\'s news:" then give just the list then stop, notes at the end are not allowed.'
+    )
+)
+def synthesize_actus_with_llm(text: str) -> str | None:
+    """Envoie le texte à Llama3 via l'API Replicate pour synthétiser les infos Twitter."""
+    return text
+
+
+def summarize_actus(input_text="./flaskr/scraping/actus_twitter.txt"):
+    with open(input_text) as actus:
+        twitter_actus = actus.read()
+
+    actus_summary = synthesize_actus_with_llm(twitter_actus)
+    if actus_summary:
+        week_number = datetime.date.today().isocalendar()[1]
+        return actus_summary, week_number
+
+
 if __name__ == "__main__":
-    infos_cleanup()
+    # infos_cleanup()
+    print(summarize_actus())
