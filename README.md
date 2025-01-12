@@ -79,8 +79,17 @@ To run the application use
 flask --app flaskr init-db 
 ```
 
-To update database execute add_db.py
+## Automation
 
-You can try your own examples in add_db.py, after initializing database.
-html need changes, take inspiration from flask tutorial.
+To keep the databse updated, on UNIX systems you can use crontab to automate the weekly execution of add_db.py and is_release_week.py
+First open crontab
+```
+crontab -e
+```
+
+Then add this line in it (Adjust with correct paths for python and for scripts)
+```
+1 17 * * 0 /usr/bin/python3 /path/to/flaskr/add_db.py; /usr/bin/python3 /path/to/flaskr/scraping/is_release_week.py
+```
+
 
