@@ -137,7 +137,8 @@ def add_all_info(max_pages=3, max_articles=5):
 def add_weekly_news():
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
-    news, week = summarize_actus()
+    actu_twitter = fetch_actus_tweets()
+    news, week = summarize_actus(actu_twitter)
     try:
         cursor.execute(
             'INSERT INTO weekly_news (week, news) VALUES (?, ?)',
