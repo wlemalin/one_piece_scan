@@ -28,32 +28,40 @@ backgroundImage: "background.jpg" # Remplacez par le chemin de votre image d'arr
 
 ```
 ├── flaskr
-│   ├── add_db.py
-│   ├── db.py
-│   ├── generate
-│   │   └── llm_summary.py
-│   ├── init.py
-│   ├── scraping
-│   │   ├── get_latest_scan.py
-│   │   ├── init.py
-│   │   ├── working_x_scrap.py
-│   │   ├── youtube_api
-│   │   │   ├── _error.py
-│   │   │   ├── get_link.py
-│   │   │   └── init.py
-│   │   └── yt_subtitles.py
-│   ├── static
-│   │   └── op_background.jpg
-│   ├── templates
-│   │   ├── base.html
-│   │   ├── explanation.html
-│   │   ├── info.html
-│   │   └── theories.html
-│   ├── text_routes.py
-│   └── text_schema.sql
+│   ├── add_db.py
+│   ├── db.py
+│   ├── generate
+│   │   └── llm_summary.py
+│   ├── __init__.py
+│   ├── scraping
+│   │   ├── actus_twitter.txt
+│   │   ├── actu_x_scraping.py
+│   │   ├── get_latest_scan.py
+│   │   ├── __init__.py
+│   │   ├── is_release_week.py
+│   │   ├── release_date.csv
+│   │   ├── x_scraping.py
+│   │   ├── youtube_api
+│   │   │   ├── _error.py
+│   │   │   ├── get_link.py
+│   │   │   └── __init__.py
+│   │   └── yt_subtitles.py
+│   ├── static
+│   │   └── op_background.jpg
+│   ├── templates
+│   │   ├── actu.html
+│   │   ├── base.html
+│   │   ├── explanation.html
+│   │   ├── info.html
+│   │   ├── release_status.html
+│   │   └── theories.html
+│   ├── text_routes.py
+│   └── text_schema.sql
 ├── git_tuto.md
 ├── instance
-│   └── flaskr.sqlite
+│   └── flaskr.sqlite
+├── Présentation
+│   └── Présentation.md
 ├── README.md
 └── requirements.txt
 ```
