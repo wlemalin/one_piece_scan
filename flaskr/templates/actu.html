@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Last scan actu{% endblock %}
+
+{% block content %}
+    <h1>News</h1>
+    <ul>
+        {% for entry in entries %}
+            <li>{{ entry[2] }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

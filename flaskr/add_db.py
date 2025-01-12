@@ -155,6 +155,6 @@ if __name__ == '__main__':
     # text = parse_dexerto(article['url'])
     # text = synthesize_infos_with_llm(text)
     # print(type(text))
-    # add_all_info(9)
-    # add_summary_subtitles('UCu2e-o9q5_hZgPHCv8m1Qzg', 3)
+    add_all_info(9)
+    add_summary_subtitles('UCu2e-o9q5_hZgPHCv8m1Qzg', 3)
 

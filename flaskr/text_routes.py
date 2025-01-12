@@ -54,4 +54,9 @@ def index_info():
 
 @bp.route('/')
 def home():
-    return render_template('release_status.html')
+    db = get_db()
+    cur = db.execute('SELECT * FROM weekly_news')
+    entries = cur.fetchall()
+
+    return render_template('actu.html', entries=entries)
+
