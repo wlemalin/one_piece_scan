@@ -147,10 +147,7 @@ def synthesize_actus_with_llm(text: str) -> str | None:
     return text
 
 
-def summarize_actus(input_text="./flaskr/scraping/actus_twitter.txt"):
-    with open(input_text) as actus:
-        twitter_actus = actus.read()
-
+def summarize_actus(twitter_actus):
     actus_summary = synthesize_actus_with_llm(twitter_actus)
     if actus_summary:
         week_number = datetime.date.today().isocalendar()[1]
@@ -159,4 +156,4 @@ def summarize_actus(input_text="./flaskr/scraping/actus_twitter.txt"):
 
 if __name__ == "__main__":
     # infos_cleanup()
-    print(summarize_actus())
+    # print(summarize_actus())
