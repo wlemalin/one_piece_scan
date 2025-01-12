@@ -34,7 +34,6 @@ backgroundImage: "background.jpg" # Remplacez par le chemin de votre image d'arr
 │   │   └── llm_summary.py
 │   ├── __init__.py
 │   ├── scraping
-│   │   ├── actus_twitter.txt
 │   │   ├── actu_x_scraping.py
 │   │   ├── get_latest_scan.py
 │   │   ├── __init__.py
@@ -77,6 +76,22 @@ backgroundImage: "background.jpg" # Remplacez par le chemin de votre image d'arr
 ```
 # Script scrap date de sortie
 ```
+
+# Scraping : Scrap Twitter pour obtenir les actus de la semaine
+
+[actu_x_scraping.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/scraping/actu_x_scraping.py)
+
+[llm_summary.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/generate/llm_summary.py)
+
+# Scraping : Scrap Twitter si le scan n'est pas sorti comme prévu
+
+[is_release_week.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/scraping/is_release_week.py)
+
+[x_scraping.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/scraping/x_scraping.py)
+
+[llm_summary.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/generate/llm_summary.py)
+
+
 # DB : SQLite storage
 
 [add_db.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/add_db.py)
