@@ -35,7 +35,7 @@ style: |
 │   ├── scraping
 │   │   ├── get_latest_scan.py
 │   │   ├── init.py
-│   │   ├── working_x_scrap.py
+│   │   ├── x_scraping.py
 │   │   ├── youtube_api
 │   │   │   ├── _error.py
 │   │   │   ├── get_link.py
@@ -70,6 +70,21 @@ style: |
 ## -Script X pour obtenir les prochaines dates de sortie
 
 [`working_x_scrap.py`](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/scraping/working_x_scrap.py)
+
+
+# Scraping : Scrap Twitter pour obtenir les actus de la semaine
+
+[actu_x_scraping.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/scraping/actu_x_scraping.py)
+
+[llm_summary.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/generate/llm_summary.py)
+
+# Scraping : Scrap Twitter si le scan n'est pas sorti comme prévu
+
+[is_release_week.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/scraping/is_release_week.py)
+
+[x_scraping.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/scraping/x_scraping.py)
+
+[llm_summary.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/generate/llm_summary.py)
 
 ---
 
