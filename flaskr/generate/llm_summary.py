@@ -157,3 +157,4 @@ def summarize_actus(twitter_actus):
 if __name__ == "__main__":
     # infos_cleanup()
     # print(summarize_actus())
+    pass
