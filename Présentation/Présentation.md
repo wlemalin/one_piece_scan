@@ -21,6 +21,7 @@ style: |
 
 # Introduction : Schéma Explicatif
 ![width:820px](Schema.png)
+
 ---
 # Introduction : Présentation de l'arborescence
 
