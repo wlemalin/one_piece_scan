@@ -52,8 +52,12 @@ Since One Piece chapters are legally published on Sundays, and analysis videos a
 ```
 
 ## Development Environment:
-Requierments:
+Requirements:
 Python 3.10+
+
+Required API keys in .env:
+- Youtube API key (https://developers.google.com/youtube/v3): API_KEY
+- Replicate API key (https://replicate.com/): REPLICATE_API_TOKEN
 
 Clone this repository on your local machine :
 ```
