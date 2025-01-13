@@ -67,11 +67,6 @@ style: |
 [`get_latest_scan.py`](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/scraping/get_latest_scan.py)
 
 
-## -Script X pour obtenir les prochaines dates de sortie
-
-[`working_x_scrap.py`](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/scraping/working_x_scrap.py)
-
-
 # Scraping : Scrap Twitter pour obtenir les actus de la semaine
 
 [actu_x_scraping.py](https://github.com/wlemalin/one_piece_scan/blob/main/flaskr/scraping/actu_x_scraping.py)
